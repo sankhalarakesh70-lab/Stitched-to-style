@@ -524,12 +524,14 @@ async function loadBrandingAdmin() {
 
 // ---------------- UPLOAD LOGO ----------------
 
+
 $("#brandingForm").addEventListener("submit", async e => {
   e.preventDefault();
 
   if (!user || user.uid !== ADMIN_UID) return;
 
-  const file = e.currentTarget.elements.logoFile.files[0];
+  const form = e.currentTarget;
+  const file = form.elements.logoFile.files[0];
 
   if (!file) {
     alert("कृपया पहले PNG या JPG logo चुनें।");
@@ -545,7 +547,6 @@ $("#brandingForm").addEventListener("submit", async e => {
     status.textContent = "Logo uploading…";
 
     const fd = new FormData();
-
     fd.append("file", file);
     fd.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
     fd.append("folder", "stitched-to-style/branding");
@@ -576,13 +577,14 @@ $("#brandingForm").addEventListener("submit", async e => {
     $("#logoPreview").src = r.secure_url;
     $("#logoPreview").classList.remove("hidden");
 
-    e.currentTarget.reset();
+    form.reset();
 
     status.textContent = "Logo saved. Public website updated.";
 
     alert("Logo successfully save ho gaya. Website refresh karke check karein.");
 
   } catch (err) {
+    console.error("Logo upload error:", err);
     status.textContent = "Logo save nahi hua.";
     alert("Logo save nahi hua: " + err.message);
   }
