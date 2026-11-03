@@ -59,9 +59,77 @@ function renderOffers(){$("#offersList").innerHTML=cache.offers.map(o=>`<div cla
 async function loadBrandingAdmin(){
   try{const snap=await getDoc(doc(db,"siteSettings","branding"));const url=snap.exists()?(snap.data().logoUrl||""):"";const img=$("#logoPreview");if(url){img.src=url;img.classList.remove("hidden")}else{img.removeAttribute("src");img.classList.add("hidden")}}catch(e){console.warn("Branding load failed",e)}
 }
-$("#brandingForm").addEventListener("submit",async e=>{
-  e.preventDefault();if(!user)return;const file=e.currentTarget.elements.logoFile.files[0];if(!file){alert("कृपया पहले PNG या JPG logo चुनें।");return}if(!["image/png","image/jpeg"].includes(file.type)){alert("केवल PNG या JPG logo upload करें।");return}
-  try{status.textContent="Logo uploading…";const fd=new FormData();fd.append("file",file);fd.append("upload_preset",CLOUDINARY_UPLOAD_PRESET);fd.append("folder","stitched-to-style/branding");const res=await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,{method:"POST",body:fd});const r=await res.json();if(!res.ok)throw new Error(r.error?.message||"Logo upload failed");await setDoc(doc(db,"siteSettings","branding"),{logoUrl:r.secure_url,updatedAt:serverTimestamp()},{merge:true});$("#logoPreview").src=r.secure_url;$("#logoPreview").classList.remove("hidden");const form = document.querySelector("#brandingForm");
+$("#brandingForm").addEventListener("submit", async e => {
+    e.preventDefault();
+
+    if (!user) {
+        alert("Please login as owner first.");
+        return;
+    }
+
+    const form = e.currentTarget;
+    const file = form.elements.logoFile.files[0];
+
+    if (!file) {
+        alert("कृपया पहले PNG या JPG logo चुनें।");
+        return;
+    }
+
+    if (!["image/png", "image/jpeg"].includes(file.type)) {
+        alert("केवल PNG या JPG logo upload करें।");
+        return;
+    }
+
+    try {
+        status.textContent = "Logo uploading...";
+
+        const fd = new FormData();
+        fd.append("file", file);
+        fd.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+        fd.append("folder", "stitched-to-style/branding");
+
+        const res = await fetch(
+            `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+            {
+                method: "POST",
+                body: fd
+            }
+        );
+
+        const result = await res.json();
+
+        if (!res.ok) {
+            throw new Error(
+                result.error?.message || "Cloudinary upload failed"
+            );
+        }
+
+        await setDoc(
+            doc(db, "siteSettings", "branding"),
+            {
+                logoUrl: result.secure_url,
+                updatedAt: serverTimestamp()
+            },
+            { merge: true }
+        );
+
+        $("#logoPreview").src = result.secure_url;
+        $("#logoPreview").classList.remove("hidden");
+
+        form.reset();
+
+        status.textContent = "Logo saved successfully.";
+
+        alert("Logo successfully save ho gaya!");
+
+    } catch (err) {
+        console.error("Logo upload error:", err);
+
+        status.textContent = "Logo save nahi hua.";
+
+        alert("Logo save nahi hua: " + err.message);
+    }
+});$("#logoPreview").src=r.secure_url;$("#logoPreview").classList.remove("hidden");const form = document.querySelector("#brandingForm");
 if (form) {
     form.reset();
 }();status.textContent="Logo saved. Public website updated.";alert("Logo successfully save ho gaya. Website refresh karke check karein.")}
