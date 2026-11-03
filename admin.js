@@ -1,12 +1,13 @@
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
 import {
   getAuth,
   signInWithEmailAndPassword,
   onAuthStateChanged,
   signOut,
   setPersistence,
-  browserLocalPersistence
+  browserSessionPersistence
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
@@ -22,6 +23,8 @@ import {
   setDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+// ---------------- FIREBASE CONFIG ----------------
+
 const firebaseConfig = {
   apiKey: "AIzaSyDfiy2YoxH-__zEl51Vaw5I4Btc9JyErvM",
   authDomain: "stitched-to-style.firebaseapp.com",
@@ -34,7 +37,10 @@ const firebaseConfig = {
 
 const CLOUDINARY_CLOUD_NAME = "mqizferj";
 const CLOUDINARY_UPLOAD_PRESET = "stitched_gallery";
+
 const ADMIN_UID = "p0c8oSUUhrT4bJbpima4CtvhRff2";
+
+// ---------------- VARIABLES ----------------
 
 const status = document.querySelector("#status");
 const $ = selector => document.querySelector(selector);
@@ -70,32 +76,51 @@ const coll = () =>
 
 try {
   const app = initializeApp(firebaseConfig);
+
   auth = getAuth(app);
   db = getFirestore(app);
 
+  // IMPORTANT: SESSION PERSISTENCE
+  // Login will not be permanently saved in browser storage.
+
+  await setPersistence(auth, browserSessionPersistence);
+
   onAuthStateChanged(auth, async u => {
+
     user = u;
 
     if (!u) {
       $("#loginPanel").classList.remove("hidden");
       $("#adminApp").classList.add("hidden");
+
+      status.textContent = "Please login to access Admin Panel.";
+
       return;
     }
 
     status.textContent = "Checking admin permission…";
 
     try {
+
+      // VERIFY ADMIN UID
+
       if (u.uid !== ADMIN_UID) {
-        status.textContent = "This account is not authorized as admin.";
+
+        status.textContent =
+          "This account is not authorized as admin.";
+
         await signOut(auth);
         return;
       }
+
+      // VERIFY FIRESTORE ADMIN DOCUMENT
 
       const adminSnapshot = await getDoc(
         doc(db, "admins", u.uid)
       );
 
       if (!adminSnapshot.exists()) {
+
         status.textContent =
           "Admin document not found in Firestore. Please add admins/" +
           u.uid + " as the document ID.";
@@ -103,6 +128,8 @@ try {
         await signOut(auth);
         return;
       }
+
+      // SHOW ADMIN DASHBOARD
 
       $("#loginPanel").classList.add("hidden");
       $("#adminApp").classList.remove("hidden");
@@ -112,6 +139,7 @@ try {
       await refresh();
 
     } catch (err) {
+
       console.error("Admin verification error:", err);
 
       status.textContent =
@@ -123,16 +151,19 @@ try {
   });
 
 } catch (err) {
+
   console.error("Firebase setup error:", err);
 
   if (status) {
-    status.textContent = "Firebase setup error: " + err.message;
+    status.textContent =
+      "Firebase setup error: " + err.message;
   }
 }
 
 // ---------------- LOGIN ----------------
 
 $("#loginForm").addEventListener("submit", async e => {
+
   e.preventDefault();
 
   const data = Object.fromEntries(
@@ -144,11 +175,15 @@ $("#loginForm").addEventListener("submit", async e => {
   );
 
   try {
+
     button.disabled = true;
     button.textContent = "Signing in…";
+
     status.textContent = "Signing in…";
 
-    await setPersistence(auth, browserLocalPersistence);
+    // SESSION LOGIN ONLY
+
+    await setPersistence(auth, browserSessionPersistence);
 
     await signInWithEmailAndPassword(
       auth,
@@ -157,6 +192,7 @@ $("#loginForm").addEventListener("submit", async e => {
     );
 
   } catch (err) {
+
     console.error("Login error:", err);
 
     status.textContent =
@@ -169,15 +205,57 @@ $("#loginForm").addEventListener("submit", async e => {
     );
 
   } finally {
+
     button.disabled = false;
     button.textContent = "Sign in";
   }
 });
 
+// ---------------- ADMIN LOGOUT ----------------
+
+const logoutBtn = $("#logoutBtn");
+
+if (logoutBtn) {
+
+  logoutBtn.addEventListener("click", async () => {
+
+    if (!confirm("Are you sure you want to logout?")) {
+      return;
+    }
+
+    try {
+
+      logoutBtn.disabled = true;
+
+      await signOut(auth);
+
+      user = null;
+
+      $("#loginPanel").classList.remove("hidden");
+      $("#adminApp").classList.add("hidden");
+
+      status.textContent =
+        "Logged out successfully. Admin Panel locked.";
+
+    } catch (err) {
+
+      console.error("Logout error:", err);
+
+      alert("Logout failed: " + err.message);
+
+    } finally {
+
+      logoutBtn.disabled = false;
+    }
+  });
+}
+
 // ---------------- GET COLLECTION ----------------
 
 async function getCollection(name) {
+
   try {
+
     const snapshot = await getDocs(collection(db, name));
 
     return snapshot.docs.map(x => ({
@@ -186,6 +264,7 @@ async function getCollection(name) {
     }));
 
   } catch (err) {
+
     console.error(err);
     return [];
   }
@@ -194,7 +273,9 @@ async function getCollection(name) {
 // ---------------- REFRESH ----------------
 
 async function refresh() {
+
   for (const name of ["fabrics", "products", "offers"]) {
+
     cache[name] = await getCollection(name);
   }
 
@@ -208,9 +289,11 @@ async function refresh() {
 // ---------------- TAB SWITCHING ----------------
 
 function switchTab(t) {
+
   tab = t;
 
   document.querySelectorAll("[data-tab]").forEach(b => {
+
     b.classList.toggle("active", b.dataset.tab === t);
   });
 
@@ -249,14 +332,18 @@ function switchTab(t) {
 }
 
 document.querySelectorAll("[data-tab]").forEach(b => {
+
   b.addEventListener("click", () => switchTab(b.dataset.tab));
 });
 
 // ---------------- CLEAR ITEM FORM ----------------
 
 function clearItem() {
+
   $("#itemForm").reset();
+
   $("#itemForm").elements.id.value = "";
+
   $("#itemForm").elements.kind.value =
     tab === "products" ? "products" : "fabrics";
 
@@ -269,14 +356,20 @@ $("#clearForm").addEventListener("click", clearItem);
 // ---------------- RENDER ITEMS ----------------
 
 function renderList() {
+
   const arr = cache[tab] || [];
 
   $("#adminList").innerHTML = arr.map(p => `
+
     <article class="admin-item">
+
       <img src="${esc(p.image || "")}" alt="">
+
       <div>
         <b>${esc(p.name)}</b>
+
         <small>${esc(p.category || "")}</small>
+
         <small>
           ${money(p.price)}
           ${tab === "fabrics"
@@ -284,23 +377,36 @@ function renderList() {
             : "/ outfit"}
         </small>
       </div>
+
       <div class="actions">
-        <button class="btn btn-small" data-edit="${esc(p.id)}">Edit</button>
-        <button class="btn btn-small danger" data-delete="${esc(p.id)}">Delete</button>
+
+        <button class="btn btn-small"
+          data-edit="${esc(p.id)}">Edit</button>
+
+        <button class="btn btn-small danger"
+          data-delete="${esc(p.id)}">Delete</button>
+
       </div>
+
     </article>
+
   `).join("") || "<p>No items yet. Add your first item above.</p>";
 
   $("#adminList").querySelectorAll("[data-edit]").forEach(b => {
+
     b.onclick = () => {
       editItem(arr.find(x => x.id === b.dataset.edit));
     };
   });
 
   $("#adminList").querySelectorAll("[data-delete]").forEach(b => {
+
     b.onclick = async () => {
+
       if (confirm("Delete this item?")) {
+
         await deleteDoc(doc(db, tab, b.dataset.delete));
+
         await refresh();
       }
     };
@@ -310,10 +416,12 @@ function renderList() {
 // ---------------- EDIT ITEM ----------------
 
 function editItem(p) {
+
   const f = $("#itemForm");
 
   ["id", "name", "category", "price", "stock",
    "colours", "description"].forEach(k => {
+
     if (f.elements[k]) {
       f.elements[k].value = p[k] ?? "";
     }
@@ -332,6 +440,7 @@ function editItem(p) {
 // ---------------- SAVE ITEM ----------------
 
 $("#itemForm").addEventListener("submit", async e => {
+
   e.preventDefault();
 
   if (!user || user.uid !== ADMIN_UID) return;
@@ -340,10 +449,13 @@ $("#itemForm").addEventListener("submit", async e => {
   const d = Object.fromEntries(new FormData(f));
 
   try {
+
     let image = d.imageUrl || "";
+
     const file = f.elements.photo.files[0];
 
     if (file) {
+
       const fd = new FormData();
 
       fd.append("file", file);
@@ -367,9 +479,11 @@ $("#itemForm").addEventListener("submit", async e => {
       image = r.secure_url;
     }
 
-    const name = tab === "fabrics" ? "fabrics" : "products";
+    const name =
+      tab === "fabrics" ? "fabrics" : "products";
 
     const payload = {
+
       name: d.name.trim(),
       category: d.category.trim(),
       price: Number(d.price),
@@ -379,13 +493,17 @@ $("#itemForm").addEventListener("submit", async e => {
     };
 
     if (tab === "fabrics") {
+
       payload.stock = Math.max(0, Number(d.stock) || 0);
       payload.colours = (d.colours || "").trim();
     }
 
     if (d.id) {
+
       await updateDoc(doc(db, name, d.id), payload);
+
     } else {
+
       await addDoc(collection(db, name), {
         ...payload,
         createdAt: serverTimestamp()
@@ -393,11 +511,14 @@ $("#itemForm").addEventListener("submit", async e => {
     }
 
     clearItem();
+
     await refresh();
 
-    status.textContent = "Saved successfully. Public store updated.";
+    status.textContent =
+      "Saved successfully. Public store updated.";
 
   } catch (err) {
+
     alert("Could not save: " + err.message);
   }
 });
@@ -405,6 +526,7 @@ $("#itemForm").addEventListener("submit", async e => {
 // ---------------- OFFERS FORM ----------------
 
 $("#offerForm").addEventListener("submit", async e => {
+
   e.preventDefault();
 
   if (!user || user.uid !== ADMIN_UID) return;
@@ -413,12 +535,17 @@ $("#offerForm").addEventListener("submit", async e => {
   const d = Object.fromEntries(new FormData(f));
 
   try {
+
     const p = {
+
       name: d.name.trim(),
       discountType: d.discountType,
       discountValue: Number(d.discountValue),
       minimumSpend: Number(d.minimumSpend || 0),
-      maxDiscount: d.maxDiscount === "" ? null : Number(d.maxDiscount),
+      maxDiscount: d.maxDiscount === ""
+        ? null
+        : Number(d.maxDiscount),
+
       startDate: d.startDate || "",
       endDate: d.endDate || "",
       active: d.active === "true",
@@ -426,8 +553,11 @@ $("#offerForm").addEventListener("submit", async e => {
     };
 
     if (d.id) {
+
       await updateDoc(doc(db, "offers", d.id), p);
+
     } else {
+
       await addDoc(collection(db, "offers"), {
         ...p,
         createdAt: serverTimestamp()
@@ -435,6 +565,7 @@ $("#offerForm").addEventListener("submit", async e => {
     }
 
     f.reset();
+
     f.elements.id.value = "";
 
     await refresh();
@@ -443,11 +574,13 @@ $("#offerForm").addEventListener("submit", async e => {
       "Offer saved. Public order estimate will use it during active dates.";
 
   } catch (err) {
+
     alert("Could not save offer: " + err.message);
   }
 });
 
 $("#clearOffer").addEventListener("click", () => {
+
   $("#offerForm").reset();
   $("#offerForm").elements.id.value = "";
 });
@@ -455,46 +588,70 @@ $("#clearOffer").addEventListener("click", () => {
 // ---------------- RENDER OFFERS ----------------
 
 function renderOffers() {
+
   $("#offersList").innerHTML = cache.offers.map(o => `
+
     <div class="order-row">
+
       <b>${esc(o.name)}</b> —
+
       ${o.discountType === "percent"
         ? Number(o.discountValue) + "%"
         : money(o.discountValue)} off
+
       <small>
         · ${o.active ? "Active" : "Inactive"}
         · ${esc(o.startDate || "Any start")}
         to ${esc(o.endDate || "No end")}
       </small>
+
       <p>
-        <button class="btn btn-small" data-offer-edit="${esc(o.id)}">Edit</button>
-        <button class="btn btn-small danger" data-offer-delete="${esc(o.id)}">Delete</button>
+
+        <button class="btn btn-small"
+          data-offer-edit="${esc(o.id)}">Edit</button>
+
+        <button class="btn btn-small danger"
+          data-offer-delete="${esc(o.id)}">Delete</button>
+
       </p>
+
     </div>
+
   `).join("") || "<p>No offers added yet.</p>";
 
   $("#offersList").querySelectorAll("[data-offer-edit]").forEach(b => {
+
     b.onclick = () => {
-      const o = cache.offers.find(x => x.id === b.dataset.offerEdit);
+
+      const o = cache.offers.find(
+        x => x.id === b.dataset.offerEdit
+      );
+
       const f = $("#offerForm");
 
       ["id", "name", "discountType", "discountValue",
        "minimumSpend", "maxDiscount", "startDate", "endDate"]
         .forEach(k => {
+
           if (f.elements[k]) {
             f.elements[k].value = o[k] ?? "";
           }
         });
 
       f.elements.active.value = String(o.active !== false);
+
       $("#offerTitle").textContent = "Edit offer";
     };
   });
 
   $("#offersList").querySelectorAll("[data-offer-delete]").forEach(b => {
+
     b.onclick = async () => {
+
       if (confirm("Delete this offer?")) {
+
         await deleteDoc(doc(db, "offers", b.dataset.offerDelete));
+
         await refresh();
       }
     };
@@ -504,28 +661,40 @@ function renderOffers() {
 // ---------------- WEBSITE LOGO / BRANDING ----------------
 
 async function loadBrandingAdmin() {
+
   try {
-    const snap = await getDoc(doc(db, "siteSettings", "branding"));
-    const url = snap.exists() ? (snap.data().logoUrl || "") : "";
+
+    const snap = await getDoc(
+      doc(db, "siteSettings", "branding")
+    );
+
+    const url = snap.exists()
+      ? (snap.data().logoUrl || "")
+      : "";
+
     const img = $("#logoPreview");
 
     if (url) {
+
       img.src = url;
       img.classList.remove("hidden");
+
     } else {
+
       img.removeAttribute("src");
       img.classList.add("hidden");
     }
 
   } catch (e) {
+
     console.warn("Branding load failed", e);
   }
 }
 
 // ---------------- UPLOAD LOGO ----------------
 
-
 $("#brandingForm").addEventListener("submit", async e => {
+
   e.preventDefault();
 
   if (!user || user.uid !== ADMIN_UID) return;
@@ -534,19 +703,23 @@ $("#brandingForm").addEventListener("submit", async e => {
   const file = form.elements.logoFile.files[0];
 
   if (!file) {
+
     alert("कृपया पहले PNG या JPG logo चुनें।");
     return;
   }
 
   if (!["image/png", "image/jpeg"].includes(file.type)) {
+
     alert("केवल PNG या JPG logo upload करें।");
     return;
   }
 
   try {
+
     status.textContent = "Logo uploading…";
 
     const fd = new FormData();
+
     fd.append("file", file);
     fd.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
     fd.append("folder", "stitched-to-style/branding");
@@ -575,17 +748,24 @@ $("#brandingForm").addEventListener("submit", async e => {
     );
 
     $("#logoPreview").src = r.secure_url;
+
     $("#logoPreview").classList.remove("hidden");
 
     form.reset();
 
-    status.textContent = "Logo saved. Public website updated.";
+    status.textContent =
+      "Logo saved. Public website updated.";
 
-    alert("Logo successfully save ho gaya. Website refresh karke check karein.");
+    alert(
+      "Logo successfully save ho gaya. Website refresh karke check karein."
+    );
 
   } catch (err) {
+
     console.error("Logo upload error:", err);
+
     status.textContent = "Logo save nahi hua.";
+
     alert("Logo save nahi hua: " + err.message);
   }
 });
@@ -593,6 +773,7 @@ $("#brandingForm").addEventListener("submit", async e => {
 // ---------------- REMOVE LOGO ----------------
 
 $("#removeLogo").addEventListener("click", async () => {
+
   if (!user || user.uid !== ADMIN_UID) return;
 
   if (!confirm("क्या आप website से logo हटाना चाहते हैं?")) {
@@ -600,6 +781,7 @@ $("#removeLogo").addEventListener("click", async () => {
   }
 
   try {
+
     await setDoc(
       doc(db, "siteSettings", "branding"),
       {
@@ -610,11 +792,14 @@ $("#removeLogo").addEventListener("click", async () => {
     );
 
     $("#logoPreview").removeAttribute("src");
+
     $("#logoPreview").classList.add("hidden");
 
-    status.textContent = "Logo removed. Default brand mark restored.";
+    status.textContent =
+      "Logo removed. Default brand mark restored.";
 
   } catch (e) {
+
     alert("Logo remove nahi hua: " + e.message);
   }
 });
@@ -622,6 +807,7 @@ $("#removeLogo").addEventListener("click", async () => {
 // ---------------- ORDERS ----------------
 
 function renderOrders() {
+
   $("#ordersList").innerHTML = `
     <p>
       Order history is not automatically recorded from WhatsApp.
