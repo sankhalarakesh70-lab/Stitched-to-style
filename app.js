@@ -10,7 +10,7 @@ const firebaseConfig = {
   appId: "1:992747942040:web:532f1c271b9cba3d3360ed",
   measurementId: "G-TK2DNGJQ8Y"
 };
-const WHATSAPP = "917340589459";
+const WHATSAPP = "917340087181";
 let db = null, fabrics = [], styles = [], offers = [], activeFabricCategory = "All", activeStyleCategory = "All";
 const demoFabrics = [
  {id:"df1",name:"Rose Floral Cotton",category:"Cotton",price:180,stock:80,colours:"Rose, White, Green",description:"Breathable printed cotton for everyday wear.",image:"https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17?auto=format&fit=crop&w=900&q=80"},
