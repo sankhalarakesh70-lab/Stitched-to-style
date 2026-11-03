@@ -1,5 +1,12 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut,
+  setPersistence,
+  browserLocalPersistence
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, query, orderBy, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig={apiKey:"AIzaSyDfiy2YoxH-__zEl51Vaw5I4Btc9JyErvM",authDomain:"stitched-to-style.firebaseapp.com",projectId:"stitched-to-style",storageBucket:"stitched-to-style.firebasestorage.app",messagingSenderId:"992747942040",appId:"1:992747942040:web:532f1c271b9cba3d3360ed",measurementId:"G-TK2DNGJQ8Y"};
 const CLOUDINARY_CLOUD_NAME="mqizferj",CLOUDINARY_UPLOAD_PRESET="stitched_gallery";
@@ -9,7 +16,34 @@ const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const $=s=>document.querySelector(s);
 const coll=()=>tab==="fabrics"?"fabrics":tab==="products"?"products":"offers";
 try{const app=initializeApp(firebaseConfig);auth=getAuth(app);db=getFirestore(app);onAuthStateChanged(auth,async u=>{user=u;if(u){$("#loginPanel").classList.add("hidden");$("#adminApp").classList.remove("hidden");status.textContent="Signed in. Changes are saved to your Firebase database.";await refresh()}else{$("#loginPanel").classList.remove("hidden");$("#adminApp").classList.add("hidden")}})}catch(e){status.textContent="Firebase setup error: "+e.message}
-$("#loginForm").addEventListener("submit",async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.currentTarget));try{await signInWithEmailAndPassword(auth,d.email,d.password)}catch(err){alert("Sign-in failed: "+err.message)}});
+$("#loginForm").addEventListener("submit", async e => {
+  e.preventDefault();
+
+  const d = Object.fromEntries(new FormData(e.currentTarget));
+  const btn = e.currentTarget.querySelector('button[type="submit"]');
+
+  try {
+    btn.disabled = true;
+    btn.textContent = "Signing in...";
+    
+    await setPersistence(auth, browserLocalPersistence);
+
+    await signInWithEmailAndPassword(
+      auth,
+      d.email.trim(),
+      d.password
+    );
+
+    status.textContent = "Login successful. Loading Admin Panel...";
+
+  } catch (err) {
+    console.error("Firebase Login Error:", err);
+    alert("Login Failed: " + err.code + "\n" + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Sign in";
+  }
+});
 async function getCollection(name){try{const s=await getDocs(collection(db,name));return s.docs.map(x=>({id:x.id,...x.data()}))}catch(e){console.error(e);return []}}
 async function refresh(){for(const name of ["fabrics","products","offers"])cache[name]=await getCollection(name);renderList();renderOffers();renderOrders();await loadBrandingAdmin()}
 function switchTab(t){tab=t;document.querySelectorAll("[data-tab]").forEach(b=>b.classList.toggle("active",b.dataset.tab===t));$("#editorPanel").classList.toggle("hidden",t==="offers"||t==="orders"||t==="branding");$("#offerPanel").classList.toggle("hidden",t!=="offers");$("#ordersPanel").classList.toggle("hidden",t!=="orders");$("#brandingPanel").classList.toggle("hidden",t!=="branding");$("#listTitle").textContent=t==="fabrics"?"Fabric inventory":"Stitching styles";$("#formTitle").textContent=t==="fabrics"?"Add fabric":"Add stitching style";$("#itemForm").elements.kind.value=t;$("#priceLabel").innerHTML=(t==="fabrics"?"Price per metre (₹) *":"Stitching price per outfit (₹) *")+'<input name="price" type="number" min="0" step="0.01" required>';$("#stockLabel").classList.toggle("hidden",t!=="fabrics");$("#colourLabel").classList.toggle("hidden",t!=="fabrics");clearItem();renderList();if(t==="branding")loadBrandingAdmin()}
