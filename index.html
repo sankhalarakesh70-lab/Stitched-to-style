@@ -1,48 +1,478 @@
+
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#7137a8">
 <title>Stitched.to.style | Fabric & Custom Stitching</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
 <header class="topbar">
-  <a class="brand" href="#"><img class="brand-logo hidden" id="siteLogo" alt="Stitched.to.style logo"><span class="brand-mark" id="brandFallback">S</span><span>stitched<span class="dot">.</span>to<span class="dot">.</span>style<small>MADE TO FIT YOU</small></span></a>
+  <a class="brand" href="#">
+    <img class="brand-logo hidden" id="siteLogo" alt="Stitched.to.style logo">
+    <span class="brand-mark" id="brandFallback">S</span>
+    <span>stitched<span class="dot">.</span>to<span class="dot">.</span>style
+    <small>MADE TO FIT YOU</small></span>
+  </a>
+
   <button class="menu" id="menuBtn" aria-label="Open menu">☰</button>
-  <nav><a href="#fabrics">Fabric Store</a><a href="#stitching">Stitching Store</a><a href="#how">How it works</a><a href="#contact">Contact</a><a class="nav-admin" href="admin.html">Owner Admin ↗</a></nav>
+
+  <nav>
+    <a href="#fabrics">Fabric Store</a>
+    <a href="#stitching">Stitching Store</a>
+    <a href="#how">How it works</a>
+    <a href="#contact">Contact</a>
+    <a href="#terms">Terms</a>
+    <a class="nav-admin" href="admin.html">Owner Admin ↗</a>
+  </nav>
 </header>
+
 <main>
+
+<!-- HERO -->
 <section class="hero">
-  <div class="hero-copy"><p class="eyebrow">YOUR STYLE, YOUR FIT</p><h1>Beautiful fabrics.<br><span>Made just for you.</span></h1><p class="hero-desc">Shop fabric by the metre or choose a stitching style made to your measurements. Build your order and send it to us on WhatsApp.</p><div class="hero-actions"><a class="btn btn-primary" href="#fabrics">Shop fabrics ↗</a><a class="btn btn-light" href="#stitching">Explore stitching</a></div><div class="hero-note">✦ Custom fit &nbsp; ✦ Clear pricing &nbsp; ✦ Easy WhatsApp ordering</div></div>
-  <div class="hero-art"><div class="art-orbit"></div><div class="fabric-card card-one"><div class="fabric-swatch swatch-rose"></div><span>Soft & graceful</span></div><div class="fabric-card card-two"><div class="fabric-swatch swatch-purple"></div><span>Made to measure</span></div><div class="hero-sticker">STYLE<br>YOUR WAY ✦</div></div>
+  <div class="hero-copy">
+    <p class="eyebrow">YOUR STYLE, YOUR FIT</p>
+    <h1>Beautiful fabrics.<br><span>Made just for you.</span></h1>
+    <p class="hero-desc">
+      Shop fabric by the metre or choose a stitching style made to your measurements.
+      Build your order and send it to us on WhatsApp.
+    </p>
+
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="#fabrics">Shop fabrics ↗</a>
+      <a class="btn btn-light" href="#stitching">Explore stitching</a>
+    </div>
+
+    <div class="hero-note">
+      ✦ Custom fit &nbsp; ✦ Clear pricing &nbsp; ✦ Easy WhatsApp ordering
+    </div>
+  </div>
+
+  <div class="hero-art">
+    <div class="art-orbit"></div>
+    <div class="fabric-card card-one">
+      <div class="fabric-swatch swatch-rose"></div>
+      <span>Soft & graceful</span>
+    </div>
+    <div class="fabric-card card-two">
+      <div class="fabric-swatch swatch-purple"></div>
+      <span>Made to measure</span>
+    </div>
+    <div class="hero-sticker">STYLE<br>YOUR WAY ✦</div>
+  </div>
 </section>
-<section class="section intro"><p class="eyebrow">SHOP YOUR WAY</p><h2>Fabric or stitching?<br><span>You can choose both.</span></h2><p>Browse our two dedicated collections. Prices and availability are managed by our team.</p></section>
-<section class="section" id="fabrics"><div class="section-heading"><div><p class="eyebrow">01 · FABRIC STORE</p><h2>Find your fabric</h2><p class="section-sub">Choose a fabric, colour and number of metres.</p></div><span class="section-badge">Priced per metre</span></div><div class="filters" id="fabricFilters"></div><div class="product-grid" id="fabricsGrid"><div class="loading">Loading fabrics…</div></div></section>
-<section class="section tint" id="stitching"><div class="section-heading"><div><p class="eyebrow">02 · STITCHING STORE</p><h2>Choose your style</h2><p class="section-sub">From everyday outfits to special occasions.</p></div><span class="section-badge">Custom fit</span></div><div class="filters" id="styleFilters"></div><div class="product-grid" id="stylesGrid"><div class="loading">Loading stitching styles…</div></div></section>
-<section class="section order-section" id="order"><div class="section-heading"><div><p class="eyebrow">YOUR ORDER</p><h2>Build your order</h2><p class="section-sub">Select fabric, stitching or both. Your estimate updates automatically.</p></div></div>
-<form id="orderForm" class="order-card">
-<div class="form-grid">
-<label>Full name *<input name="name" required placeholder="Your name"></label>
-<label>WhatsApp number *<input name="phone" required type="tel" placeholder="Your contact number"></label>
-<label class="wide">Order type *<select name="orderType" id="orderType" required><option value="fabric">Fabric only</option><option value="stitching">Stitching only (you provide fabric)</option><option value="both">Fabric + stitching</option></select></label>
-<label id="fabricField">Fabric *<select name="fabricId" id="fabricSelect"><option value="">Choose fabric</option></select></label>
-<label id="colourField">Colour<input name="colour" placeholder="e.g. Wine, black, blue"></label>
-<label id="metresField">Fabric quantity (metres)<input name="metres" id="metres" type="number" min="0.5" step="0.5" value="2"></label>
-<label id="styleField">Stitching style<select name="styleId" id="styleSelect"><option value="">Choose a style</option></select></label>
-<label>Bust / chest (inches)<input name="bust" type="number" min="0" step="0.25"></label>
-<label>Waist (inches)<input name="waist" type="number" min="0" step="0.25"></label>
-<label>Hip (inches)<input name="hip" type="number" min="0" step="0.25"></label>
-<label>Shoulder (inches)<input name="shoulder" type="number" min="0" step="0.25"></label>
-<label>Sleeve length (inches)<input name="sleeve" type="number" min="0" step="0.25"></label>
-<label>Outfit length (inches)<input name="length" type="number" min="0" step="0.25"></label>
-<label class="wide">Additional notes<textarea name="notes" rows="3" placeholder="Colour preference, customisation, delivery questions…"></textarea></label>
-</div>
-<div class="estimate"><div><span>Fabric estimate</span><strong id="fabricEstimate">₹0</strong></div><div><span>Stitching estimate</span><strong id="stitchEstimate">₹0</strong></div><div><span>Offer discount</span><strong id="discountEstimate">₹0</strong></div><div class="estimate-total"><span>Estimated total</span><strong id="totalEstimate">₹0</strong></div><p class="tiny">Final price, delivery and payment arrangements will be confirmed with you on WhatsApp. No online payment is taken on this website.</p></div>
-<button class="btn btn-primary full" type="submit">Send order on WhatsApp ↗</button>
-</form></section>
-<section class="section how" id="how"><p class="eyebrow">SIMPLE & PERSONAL</p><h2>How it works</h2><div class="steps"><article><b>01</b><h3>Browse</h3><p>Explore fabrics and stitching styles separately.</p></article><article><b>02</b><h3>Customise</h3><p>Choose colour, metres, style and measurements.</p></article><article><b>03</b><h3>WhatsApp us</h3><p>Review your estimate and confirm your order with our team.</p></article></div></section>
+
+<!-- INTRO -->
+<section class="section intro">
+  <p class="eyebrow">SHOP YOUR WAY</p>
+  <h2>Fabric or stitching?<br><span>You can choose both.</span></h2>
+  <p>Browse our two dedicated collections. Prices and availability are managed by our team.</p>
+</section>
+
+<!-- FABRIC STORE -->
+<section class="section" id="fabrics">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">01 · FABRIC STORE</p>
+      <h2>Find your fabric</h2>
+      <p class="section-sub">Choose a fabric, colour and number of metres.</p>
+    </div>
+    <span class="section-badge">Priced per metre</span>
+  </div>
+
+  <div class="filters" id="fabricFilters"></div>
+  <div class="product-grid" id="fabricsGrid">
+    <div class="loading">Loading fabrics…</div>
+  </div>
+</section>
+
+<!-- STITCHING STORE -->
+<section class="section tint" id="stitching">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">02 · STITCHING STORE</p>
+      <h2>Choose your style</h2>
+      <p class="section-sub">From everyday outfits to special occasions.</p>
+    </div>
+    <span class="section-badge">Custom fit</span>
+  </div>
+
+  <div class="filters" id="styleFilters"></div>
+  <div class="product-grid" id="stylesGrid">
+    <div class="loading">Loading stitching styles…</div>
+  </div>
+</section>
+
+<!-- ORDER FORM -->
+<section class="section order-section" id="order">
+
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">YOUR ORDER</p>
+      <h2>Build your order</h2>
+      <p class="section-sub">
+        Select fabric, stitching or both. Your estimate updates automatically.
+      </p>
+    </div>
+  </div>
+
+  <form id="orderForm" class="order-card">
+
+    <div class="form-grid">
+
+      <label>Full name *
+        <input name="name" required placeholder="Your name">
+      </label>
+
+      <label>WhatsApp number *
+        <input name="phone" required type="tel" placeholder="Your contact number">
+      </label>
+
+      <label class="wide">Order type *
+        <select name="orderType" id="orderType" required>
+          <option value="fabric">Fabric only</option>
+          <option value="stitching">Stitching only (you provide fabric)</option>
+          <option value="both">Fabric + stitching</option>
+        </select>
+      </label>
+
+      <label id="fabricField">Fabric *
+        <select name="fabricId" id="fabricSelect">
+          <option value="">Choose fabric</option>
+        </select>
+      </label>
+
+      <label id="colourField">Colour
+        <input name="colour" placeholder="e.g. Wine, black, blue">
+      </label>
+
+      <label id="metresField">Fabric quantity (metres)
+        <input name="metres" id="metres" type="number" min="0.5" step="0.5" value="2">
+      </label>
+
+      <label id="styleField">Stitching style
+        <select name="styleId" id="styleSelect">
+          <option value="">Choose a style</option>
+        </select>
+      </label>
+
+      <label>Bust / chest (inches)
+        <input name="bust" type="number" min="0" step="0.25">
+      </label>
+
+      <label>Waist (inches)
+        <input name="waist" type="number" min="0" step="0.25">
+      </label>
+
+      <label>Hip (inches)
+        <input name="hip" type="number" min="0" step="0.25">
+      </label>
+
+      <label>Shoulder (inches)
+        <input name="shoulder" type="number" min="0" step="0.25">
+      </label>
+
+      <label>Sleeve length (inches)
+        <input name="sleeve" type="number" min="0" step="0.25">
+      </label>
+
+      <label>Outfit length (inches)
+        <input name="length" type="number" min="0" step="0.25">
+      </label>
+
+      <label class="wide">Additional notes
+        <textarea name="notes" rows="3"
+        placeholder="Colour preference, customisation, delivery questions…"></textarea>
+      </label>
+
+    </div>
+
+    <!-- PRICE ESTIMATE -->
+    <div class="estimate">
+
+      <div>
+        <span>Fabric estimate</span>
+        <strong id="fabricEstimate">₹0</strong>
+      </div>
+
+      <div>
+        <span>Stitching estimate</span>
+        <strong id="stitchEstimate">₹0</strong>
+      </div>
+
+      <div>
+        <span>Offer discount</span>
+        <strong id="discountEstimate">₹0</strong>
+      </div>
+
+      <div class="estimate-total">
+        <span>Estimated total</span>
+        <strong id="totalEstimate">₹0</strong>
+      </div>
+
+      <p class="tiny">
+        Final price, delivery and payment arrangements will be confirmed with you on WhatsApp.
+        No online payment is taken on this website.
+      </p>
+
+    </div>
+
+    <!-- CONFIRMATION INFORMATION -->
+    <div style="background:#f7efff;border:1px solid #e5d2fa;border-radius:14px;padding:18px;margin:18px 0;">
+      <h3 style="color:#7137a8;margin:0 0 10px;">
+        Order Confirmation – ₹99
+      </h3>
+
+      <p style="margin:0 0 10px;line-height:1.7;">
+        A confirmation amount of <strong>₹99</strong> is required for order confirmation.
+      </p>
+
+      <p style="margin:0;line-height:1.7;">
+        <strong>Payment Mode:</strong> Payment details and payment arrangements
+        will be discussed directly with you on WhatsApp.
+      </p>
+    </div>
+
+    <button class="btn btn-primary full" type="submit">
+      Send order on WhatsApp ↗
+    </button>
+
+  </form>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section how" id="how">
+  <p class="eyebrow">SIMPLE & PERSONAL</p>
+  <h2>How it works</h2>
+
+  <div class="steps">
+
+    <article>
+      <b>01</b>
+      <h3>Browse</h3>
+      <p>Explore fabrics and stitching styles separately.</p>
+    </article>
+
+    <article>
+      <b>02</b>
+      <h3>Customise</h3>
+      <p>Choose colour, metres, style and measurements.</p>
+    </article>
+
+    <article>
+      <b>03</b>
+      <h3>WhatsApp us</h3>
+      <p>Review your estimate and confirm your order with our team.</p>
+    </article>
+
+    <article>
+      <b>04</b>
+      <h3>Pay ₹99</h3>
+      <p>Discuss payment arrangements with our team on WhatsApp to confirm your order.</p>
+    </article>
+
+  </div>
+</section>
+
+<!-- PAYMENT SECTION -->
+<section class="section tint" id="payment">
+
+  <div style="max-width:750px;margin:auto;text-align:center;">
+
+    <p class="eyebrow">SECURE ORDER PROCESS</p>
+
+    <h2>Payment & Confirmation</h2>
+
+    <p style="line-height:1.8;margin:15px 0;">
+      We believe in personal communication and a smooth ordering experience.
+      Once you submit your order, our team will contact you on WhatsApp.
+    </p>
+
+    <div style="background:white;border-radius:16px;padding:24px;margin-top:20px;">
+
+      <h2 style="color:#7137a8;margin:0;">₹99</h2>
+
+      <h3>Order Confirmation Amount</h3>
+
+      <p style="line-height:1.8;">
+        Pay ₹99 for order confirmation. Payment method and further payment
+        details will be discussed directly on WhatsApp.
+      </p>
+
+      <p style="font-weight:600;">
+        No online payment facility is available on this website.
+      </p>
+
+      <a class="btn btn-primary"
+         href="https://wa.me/917340087181?text=Hello%20Stitched.to.style%2C%20I%20want%20to%20discuss%20my%20order%20confirmation%20and%20payment."
+         target="_blank"
+         rel="noopener">
+        Discuss Payment on WhatsApp ↗
+      </a>
+
+    </div>
+
+  </div>
+
+</section>
+
+<!-- TERMS AND CONDITIONS -->
+<section class="section" id="terms">
+
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">PLEASE READ BEFORE ORDERING</p>
+      <h2>Terms & Conditions</h2>
+      <p class="section-sub">A few important things to know before placing your order.</p>
+    </div>
+  </div>
+
+  <div style="background:#fff;border:1px solid #eee;border-radius:16px;padding:22px;line-height:1.9;">
+
+    <h3>1. Order Confirmation</h3>
+    <p>
+      A confirmation amount of ₹99 is required for confirming an order.
+      The order will be considered confirmed after confirmation by our team.
+    </p>
+
+    <h3>2. Payment Method</h3>
+    <p>
+      Payment methods and payment details will be discussed directly
+      with the customer on WhatsApp. No online payment is collected through this website.
+    </p>
+
+    <h3>3. Fabric Availability</h3>
+    <p>
+      Fabric availability, colour and quantity are subject to stock.
+      Our team will confirm availability before finalising the order.
+    </p>
+
+    <h3>4. Custom Stitching & Measurements</h3>
+    <p>
+      Customers are responsible for providing correct body measurements
+      and stitching requirements. Please verify all measurements before confirmation.
+    </p>
+
+    <h3>5. Pricing</h3>
+    <p>
+      Prices displayed on the website are estimates.
+      Final pricing, additional customisation charges and delivery charges
+      will be confirmed on WhatsApp.
+    </p>
+
+    <h3>6. Order Changes & Cancellation</h3>
+    <p>
+      Any changes or cancellation requests must be discussed with our team
+      on WhatsApp. Custom stitching and order processing may affect the
+      possibility of making changes.
+    </p>
+
+    <h3>7. Delivery</h3>
+    <p>
+      Delivery availability, charges and estimated delivery timelines
+      will be discussed and confirmed with the customer before finalisation.
+    </p>
+
+    <h3>8. Customer Support</h3>
+    <p>
+      For any questions regarding fabrics, stitching, orders or payments,
+      please contact us through WhatsApp or Instagram.
+    </p>
+
+    <p style="margin-top:18px;font-weight:600;color:#7137a8;">
+      By placing an order, you acknowledge that you have read and agreed
+      to these Terms & Conditions.
+    </p>
+
+  </div>
+
+</section>
+
 </main>
-<footer id="contact"><a class="brand footer-brand" href="#"><img class="brand-logo footer-logo hidden" id="siteLogoFooter" alt="Stitched.to.style logo"><span class="brand-mark" id="brandFallbackFooter">S</span><span>stitched<span class="dot">.</span>to<span class="dot">.</span>style<small>MADE TO FIT YOU</small></span></a><p>Thoughtfully chosen fabrics. Stitching made for you.</p><div class="footer-links"><a href="admin.html">Owner Admin</a><a href="#order">Place an order</a><a href="#how">How it works</a></div><small>© <span id="year"></span> Stitched.to.style. All rights reserved.</small></footer>
+
+<!-- FOOTER / CONTACT -->
+<footer id="contact">
+
+  <a class="brand footer-brand" href="#">
+
+    <img class="brand-logo footer-logo hidden"
+         id="siteLogoFooter"
+         alt="Stitched.to.style logo">
+
+    <span class="brand-mark" id="brandFallbackFooter">S</span>
+
+    <span>
+      stitched<span class="dot">.</span>to<span class="dot">.</span>style
+      <small>MADE TO FIT YOU</small>
+    </span>
+
+  </a>
+
+  <p>Thoughtfully chosen fabrics. Stitching made for you.</p>
+
+  <!-- CONTACT DETAILS -->
+  <div style="margin:22px auto;line-height:2;">
+
+    <h3>Get in Touch</h3>
+
+    <p>
+      <strong>WhatsApp:</strong>
+      <a href="https://wa.me/917340087181"
+         target="_blank"
+         rel="noopener">
+        +91 73400 87181
+      </a>
+    </p>
+
+    <p>
+      <strong>Instagram:</strong>
+      <a href="https://www.instagram.com/stitched.to.style/"
+         target="_blank"
+         rel="noopener">
+        @stitched.to.style ↗
+      </a>
+    </p>
+
+  </div>
+
+  <!-- SOCIAL BUTTONS -->
+  <div class="footer-links">
+
+    <a href="https://www.instagram.com/stitched.to.style/"
+       target="_blank"
+       rel="noopener">
+      Instagram ↗
+    </a>
+
+    <a href="https://wa.me/917340087181"
+       target="_blank"
+       rel="noopener">
+      WhatsApp ↗
+    </a>
+
+    <a href="#order">Place an order</a>
+
+    <a href="#how">How it works</a>
+
+    <a href="#payment">Payment Details</a>
+
+    <a href="#terms">Terms & Conditions</a>
+
+    <a href="admin.html">Owner Admin</a>
+
+  </div>
+
+  <small>
+    © <span id="year"></span> Stitched.to.style. All rights reserved.
+  </small>
+
+</footer>
+
 <script type="module" src="app.js"></script>
-</body></html>
+
+</body>
+</html>
